@@ -17,6 +17,7 @@ class Brinquedo(models.Model):
     nome = models.CharField(max_length=200)
     descricao_curta = models.CharField(max_length=255)
     descricao_completa = models.CharField()
+    codigo = models.CharField(max_length=50, unique=True, verbose_name='Código Identificador')
 
     # Relacionamento 1:N com Categoria
     categoria = models.ForeignKey(Categoria, related_name='brinquedos', on_delete=models.SET_NULL, null=True)
