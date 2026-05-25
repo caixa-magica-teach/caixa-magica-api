@@ -1,10 +1,6 @@
 from rest_framework import serializers
-<<<<<<< HEAD
 from datetime import date
 from .models import Categoria, Brinquedo, ImagemBrinquedo, Pedido, Cliente
-=======
-from .models import Categoria, Brinquedo, ImagemBrinquedo
->>>>>>> 5bd4682b6c06e0129dedc7b41444723c95f680c8
 
 class CategoriaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -69,7 +65,6 @@ class BrinquedoSerializer(serializers.ModelSerializer):
             for imagem_data in imagens_data:
                 ImagemBrinquedo.objects.create(brinquedo=instance, **imagem_data)
                 
-<<<<<<< HEAD
         return instance
 
 class PedidoSerializer(serializers.ModelSerializer):
@@ -126,6 +121,3 @@ class ClienteSerializer(serializers.ModelSerializer):
                 "O endereço de entrega fornecido está incompleto."
             )
         return value
-=======
-        return instance
->>>>>>> 5bd4682b6c06e0129dedc7b41444723c95f680c8

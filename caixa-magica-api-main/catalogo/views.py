@@ -1,14 +1,9 @@
 from rest_framework import viewsets, filters
 from django_filters.rest_framework import DjangoFilterBackend
-<<<<<<< HEAD
 from rest_framework.views import exception_handler
 from rest_framework.response import Response
 from .models import Categoria, Brinquedo, Pedido, Cliente
 from .serializers import CategoriaSerializer, BrinquedoSerializer, PedidoSerializer, ClienteSerializer
-=======
-from .models import Categoria, Brinquedo
-from .serializers import CategoriaSerializer, BrinquedoSerializer
->>>>>>> 5bd4682b6c06e0129dedc7b41444723c95f680c8
 
 class CategoriaViewSet(viewsets.ModelViewSet):
     queryset = Categoria.objects.all()
@@ -25,7 +20,6 @@ class BrinquedoViewSet(viewsets.ModelViewSet):
     filterset_fields = ['categoria', 'status_atual']
     
     # 3. Quais campos aceitam busca por TEXTO PARCIAL (ex: ?search=Lego ou ?search=CM243)
-<<<<<<< HEAD
     search_fields = ['nome', 'descricao_curta', 'codigo']
 
 class PedidoViewSet(viewsets.ModelViewSet):
@@ -45,6 +39,3 @@ def custom_exception_handler(exc, context):
             "detalhes": response.data
         }
     return response
-=======
-    search_fields = ['nome', 'descricao_curta', 'codigo']
->>>>>>> 5bd4682b6c06e0129dedc7b41444723c95f680c8

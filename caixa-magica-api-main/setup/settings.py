@@ -130,12 +130,8 @@ CORS_ALLOWED_ORIGINS = [
 
 # (Opcional) Se quiser liberar geral durante o desenvolvimento, podemos usar:
 # CORS_ALLOW_ALL_ORIGINS = True 
-<<<<<<< HEAD
 # Mas lembrar de trocar para a lista específica quando formos fazer o Deploy!
 
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'catalogo.views.custom_exception_handler',
 }
-=======
-# Mas lembrar de trocar para a lista específica quando formos fazer o Deploy!
->>>>>>> 5bd4682b6c06e0129dedc7b41444723c95f680c8
