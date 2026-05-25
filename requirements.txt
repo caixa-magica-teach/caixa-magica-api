@@ -1,0 +1,23 @@
+# Caso for a primera vez que esteja rodando o projeto
+    # python -m venv venv
+
+# Ative o ambiente virtual
+    # venv\Scripts\activate
+
+    # Se for a primeira vez que esteja rodando o projeto, instale as dependências
+        # pip install -r requirements.txt
+    
+    # Rode as migrações, se precisar
+        # python manage.py migrate
+    
+    # Rode o servidor
+        # python manage.py runserver
+
+# Rotas
+# /api/v1/categorias
+# /api/v1/brinquedos
+
+django
+djangorestframework
+django-cors-headers
+django_filter
