@@ -8,7 +8,8 @@ from catalogo.views import (
     BrinquedoViewSet, 
     PedidoViewSet, 
     ClienteViewSet,
-    ImagemBrinquedoViewSet  
+    ImagemBrinquedoViewSet  # <--- ADICIONE AQUI
+)
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
