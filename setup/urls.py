@@ -2,14 +2,13 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-# 1. IMPORTE A VIEWSET DAS IMAGENS AQUI (ex: ImagemBrinquedoViewSet)
+
 from catalogo.views import (
     CategoriaViewSet, 
     BrinquedoViewSet, 
     PedidoViewSet, 
     ClienteViewSet,
-    ImagemBrinquedoViewSet  # <--- ADICIONE AQUI
-)
+    ImagemBrinquedoViewSet  
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -22,8 +21,7 @@ router.register(r'brinquedos', BrinquedoViewSet)
 router.register(r'pedidos', PedidoViewSet)
 router.register(r'clientes', ClienteViewSet)
 
-# 2. REGISTRE A ROTA DAS IMAGENS NO ROUTER
-router.register(r'imagens', ImagemBrinquedoViewSet)  # <--- ADICIONE ESTA LINHA
+router.register(r'imagens', ImagemBrinquedoViewSet)  
 
 urlpatterns = [
     path('admin/', admin.site.urls),
