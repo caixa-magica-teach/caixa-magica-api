@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from .models import Categoria, Brinquedo, ImagemBrinquedo
+from datetime import date
+from django.contrib.auth.models import User
+from .models import Categoria, Brinquedo, ImagemBrinquedo, Pedido, Cliente
 
 class CategoriaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -7,61 +9,112 @@ class CategoriaSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ImagemBrinquedoSerializer(serializers.ModelSerializer):
+
+    brinquedo = serializers.PrimaryKeyRelatedField(
+        queryset=Brinquedo.objects.all(), 
+        required=False
+    )
+
     class Meta:
         model = ImagemBrinquedo
-        # Retornamos apenas os dados úteis para o frontend montar o carrossel. 
-        # Não precisamos retornar o ID do brinquedo aqui, pois já estará dentro dele.
-        fields = ['id', 'imagem_url', 'ordem']
+        fields = ['id', 'brinquedo', 'imagem_url', 'ordem']
 
 class BrinquedoSerializer(serializers.ModelSerializer):
-    # Essa configuração permite que ao listar um brinquedo,
-    # ele traga o objeto Categoria completo (nome, id) e não apenas o número do ID.
     categoria = CategoriaSerializer(read_only=True)
-
-    # Mas quando formos criar (POST), passamos apenas o ID da categoria
     categoria_id = serializers.PrimaryKeyRelatedField(
         queryset=Categoria.objects.all(), source='categoria', write_only=True
     )
-
-    # PUXAMOS AS IMAGENS USANDO O RELATED_NAME
-    # O nome da variável TEM que ser igual ao related_name='imagens' que você colocou no models.py
     imagens = ImagemBrinquedoSerializer(many=True)
 
     class Meta:
         model = Brinquedo
         fields = '__all__'
 
-    # Sobrescrevemos o método de criação para lidar com as imagens
     def create(self, validated_data):
-        # 1. Tiramos a lista de imagens dos dados validados antes de salvar o brinquedo
         imagens_data = validated_data.pop('imagens', [])
-        
-        # 2. Criamos o brinquedo no banco de dados
         brinquedo = Brinquedo.objects.create(**validated_data)
-        
-        # 3. Fazemos um loop na lista de imagens e criamos uma por uma, vinculando ao brinquedo
         for imagem_data in imagens_data:
             ImagemBrinquedo.objects.create(brinquedo=brinquedo, **imagem_data)
-            
         return brinquedo
     
-    # Sobrescrevemos o método de atualização para lidar com as imagens
     def update(self, instance, validated_data):
-        # 1. Tiramos as imagens dos dados validados (usamos None como padrão para saber se foram enviadas)
         imagens_data = validated_data.pop('imagens', None)
-        
-        # 2. Atualizamos os campos normais do Brinquedo (nome, valor, status, etc.)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
         
-        # 3. Só mexemos nas imagens se o React as enviou no JSON
         if imagens_data is not None:
-            # Apaga as imagens antigas do banco
             instance.imagens.all().delete()
-            
-            # Recria as imagens com os dados novos vindos do PUT
             for imagem_data in imagens_data:
                 ImagemBrinquedo.objects.create(brinquedo=instance, **imagem_data)
                 
         return instance
+
+class PedidoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pedido
+        fields = [
+            'id', 
+            'cliente', 
+            'prazo_aluguel', 
+            'tipo_logistica', 
+            'endereco_entrega', 
+            'status_aluguel', 
+            'valor_total', 
+            'data_criacao'
+        ]
+
+    def validate(self, data):
+        valor_total = data.get('valor_total', 0)
+        if valor_total < 0:
+            raise serializers.ValidationError(
+                {"valor_total": "O valor total do pedido não pode ser negativo!"}
+            )
+        return data
+
+class ClienteSerializer(serializers.ModelSerializer):
+    # Campos extras para receber os dados do User vindos do React
+    username = serializers.CharField(write_only=True)
+    email = serializers.EmailField(write_only=True)
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+    first_name = serializers.CharField(write_only=True, required=False)
+
+    class Meta:
+        model = Cliente
+        fields = ['id', 'user', 'username', 'email', 'password', 'first_name', 'telefone', 'endereco_padrao']
+        read_only_fields = ['user']
+
+    def create(self, validated_data):
+        username = validated_data.pop('username')
+        email = validated_data.pop('email')
+        password = validated_data.pop('password')
+        first_name = validated_data.pop('first_name', '')
+
+        # 1. Cria o usuário do Django com a senha criptografada
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=first_name
+        )
+
+        # 2. Cria o Cliente vinculando ao User criado
+        cliente = Cliente.objects.create(user=user, **validated_data)
+        return cliente
+
+    # Validação LGPD para o Telefone
+    def validate_telefone(self, value):
+        telefone_limpo = ''.join(filter(str.isdigit, value))
+        if len(telefone_limpo) < 10 or len(telefone_limpo) > 11:
+            raise serializers.ValidationError(
+                "O telefone deve conter o DDD e ter entre 10 e 11 dígitos numéricos."
+            )
+        return value
+
+    # Validação LGPD para o Endereço
+    def validate_endereco_padrao(self, value):
+        if len(value.strip()) < 10:
+            raise serializers.ValidationError(
+                "O endereço de entrega fornecido está incompleto."
+            )
+        return value
