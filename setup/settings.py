@@ -146,3 +146,19 @@ REST_FRAMEWORK = {
 }
 
 # fim
+
+
+# REST_FRAMEWORK = {
+#   'EXCEPTION_HANDLER': 'catalogo.views.custom_exception_handler',
+# }
+
+#Gab  Para o login
+# Configuração unificada do REST_FRAMEWORK (Tratamento de exceções + Login JWT)
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'catalogo.views.custom_exception_handler',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+# fim

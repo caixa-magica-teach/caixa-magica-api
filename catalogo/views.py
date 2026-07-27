@@ -47,3 +47,21 @@ def custom_exception_handler(exc, context):
             "detalhes": response.data
         }
     return response
+
+class PedidoViewSet(viewsets.ModelViewSet):
+    queryset = Pedido.objects.all()
+    serializer_class = PedidoSerializer
+
+class ClienteViewSet(viewsets.ModelViewSet):
+    queryset = Cliente.objects.all()
+    serializer_class = ClienteSerializer
+
+def custom_exception_handler(exc, context):
+    response = exception_handler(exc, context)
+    if response is not None:
+        response.data = {
+            "status": response.status_code,
+            "mensagem": "Erro na requisição",
+            "detalhes": response.data
+        }
+    return response
