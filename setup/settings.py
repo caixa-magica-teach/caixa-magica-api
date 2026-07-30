@@ -122,14 +122,14 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 # Lista de URLs que podem acessar a API
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:5173", # Caso o front use Vite
-]
+#CORS_ALLOWED_ORIGINS = [
+#    "http://localhost:3000",
+#    "http://127.0.0.1:3000",
+#    "http://localhost:5173", # Caso o front use Vite
+#]
 
 # (Opcional) Se quiser liberar geral durante o desenvolvimento, podemos usar:
-# CORS_ALLOW_ALL_ORIGINS = True 
+CORS_ALLOW_ALL_ORIGINS = True 
 # Mas lembrar de trocar para a lista específica quando formos fazer o Deploy!
 
 # REST_FRAMEWORK = {
